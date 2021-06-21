@@ -539,6 +539,10 @@ class Client(object):
             offset += len(feed.entries)
             # Yield query results until page is exhausted.
             for entry in feed.entries:
+                # BUG: Fixes a bug where sometimes the entry does not return with a title in the feed
+                # E.g. https://arxiv.org/abs/2104.12255v1
+                if not hasattr(entry, 'title'):
+                    entry['title'] = None
                 yield Result._from_feed_entry(entry)
 
     def _format_url(self, search: Search, start: int, page_size: int) -> str:
